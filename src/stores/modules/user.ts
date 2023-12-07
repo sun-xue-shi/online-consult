@@ -23,7 +23,11 @@ export const useUserStore = defineStore(
 
     return { user, setUser, removeUser }
   },
+  // pinia定制化
   {
-    persist: true
+    persist: {
+      key: 'user',
+      paths: ['user']
+    }
   }
 )

@@ -1,10 +1,11 @@
 import router from '@/router'
 import { useUserStore } from '@/stores'
 import axios from 'axios'
-import { Toast } from 'vant'
+import { showToast } from 'vant'
+import 'vant/es/toast/style/index'
 
-const baseURL = ''
-const request = axios.create({
+const baseURL = 'https://consult-api.itheima.net/'
+export const request = axios.create({
   baseURL,
   timeout: 10000
 })
@@ -24,7 +25,7 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   (res) => {
     if (res.data?.code !== 10000) {
-      new Toast(res.data?.message)
+      showToast(res.data?.message)
       return Promise.reject(res.data)
     }
     return res.data
