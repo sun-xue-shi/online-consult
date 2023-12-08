@@ -1,12 +1,33 @@
 <script setup lang="ts">
-import NavBar from '@/components/NavBar.vue'
 import { ref } from 'vue'
+import { mobileRule, passwordRule } from '@/utils/rule'
+import { showToast } from 'vant'
+import { loginByPassword } from '@/api/user'
+import { useUserStore } from '@/stores'
+import { useRouter, useRoute } from 'vue-router'
 
 const onClickRight = () => {
   console.log('5')
 }
 
 const agree = ref(false)
+const isShowPwd = ref(false)
+const mobile = ref('')
+const password = ref('')
+
+const userStore = useUserStore()
+const router = useRouter()
+const route = useRoute()
+const login = async () => {
+  if (!agree.value) {
+    return showToast('请勾选用户协议')
+  }
+
+  const res = await loginByPassword(mobile.value, password.value)
+  userStore.setUser(res.data)
+  router.push((route.query.returnUrl as string) || '/user')
+  showToast('登录成功')
+}
 </script>
 
 <template>
@@ -19,15 +40,37 @@ const agree = ref(false)
         <VanIcon name="arrow"></VanIcon>
       </a>
     </div>
-    <VanForm aria-autocomplete="off">
-      <VanField placeholder="请输入手机号" type="tel"></VanField>
-      <VanField placeholder="请输入密码" type="password"></VanField>
+    <VanForm aria-autocomplete="off" @submit="login">
+      <VanField
+        placeholder="请输入手机号"
+        type="tel"
+        v-model="mobile"
+        :rules="mobileRule"
+        label="手机号"
+        colon
+      ></VanField>
+      <VanField
+        placeholder="请输入密码"
+        :type="isShowPwd ? 'text' : 'password'"
+        v-model="password"
+        :rules="passwordRule"
+        label="密码"
+        colon
+      >
+        <template #right-icon>
+          <UseIcon
+            @click="isShowPwd = !isShowPwd"
+            :name="`login-eye-${isShowPwd ? 'on' : 'off'}`"
+          />
+        </template>
+      </VanField>
+
       <div class="forget">
         <a href="#">忘记密码?</a>
       </div>
 
       <div class="cell">
-        <VanButton block round type="primary">登录</VanButton>
+        <VanButton block round type="primary" native-type="submit">登录</VanButton>
       </div>
       <div class="cell">
         <VanCheckbox v-model="agree">

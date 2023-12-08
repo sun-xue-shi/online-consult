@@ -2,7 +2,6 @@ import router from '@/router'
 import { useUserStore } from '@/stores'
 import axios from 'axios'
 import { showToast } from 'vant'
-import 'vant/es/toast/style/index'
 
 const baseURL = 'https://consult-api.itheima.net/'
 export const request = axios.create({
