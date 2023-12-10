@@ -20,4 +20,14 @@ const passwordRule = [
   }
 ]
 
-export { mobileRule, passwordRule }
+const codeRule = [
+  {
+    require: true,
+    message: '请输入验证码'
+  },
+  {
+    pattern: /^\d{6}$/,
+    message: '6位验证码'
+  }
+]
+export { mobileRule, passwordRule, codeRule }

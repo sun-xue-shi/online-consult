@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { mobileRule, passwordRule } from '@/utils/rule'
-import { showToast } from 'vant'
-import { loginByPassword } from '@/api/user'
+import { ref, onUnmounted } from 'vue'
+import { mobileRule, passwordRule, codeRule } from '@/utils/rule'
+import { showToast, type FormInstance } from 'vant'
+import { loginByPassword, sendCode, loginByMobile } from '@/api/user'
 import { useUserStore } from '@/stores'
 import { useRouter, useRoute } from 'vue-router'
+// import { AxiosResponse } from 'axios'
 
 const onClickRight = () => {
   console.log('5')
@@ -15,6 +16,7 @@ const isShowPwd = ref(false)
 const mobile = ref('')
 const password = ref('')
 
+// 登录功能
 const userStore = useUserStore()
 const router = useRouter()
 const route = useRoute()
@@ -23,24 +25,60 @@ const login = async () => {
     return showToast('请勾选用户协议')
   }
 
-  const res = await loginByPassword(mobile.value, password.value)
+  const res = isPass.value
+    ? await loginByPassword(mobile.value, password.value)
+    : await loginByMobile(mobile.value, code.value)
+
   userStore.setUser(res.data)
   router.push((route.query.returnUrl as string) || '/user')
   showToast('登录成功')
 }
+
+const isPass = ref(true)
+const code = ref('')
+const form = ref<FormInstance>()
+const time = ref(0)
+let timer: number
+// 发送验证码
+const send = async () => {
+  if (time.value > 0) return
+  try {
+    console.log('4')
+
+    await form.value?.validate('mobile')
+    console.log('6')
+
+    const res = await sendCode(mobile.value, 'login')
+    console.log('5')
+
+    code.value = res.data.code
+    showToast('发送成功')
+    time.value = 60
+    timer = window.setInterval(() => {
+      time.value--
+      if (time.value <= 0) window.clearInterval(timer)
+    }, 1000)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+onUnmounted(() => {
+  window.clearInterval(timer)
+})
 </script>
 
 <template>
   <NavBar title="登录" right="注册" @click-right="onClickRight" />
   <div class="login">
     <div class="login-head">
-      <h3>密码登录</h3>
-      <a href="#">
-        <span>短信验证码登录</span>
+      <h3>{{ !isPass ? '验证码登录' : '密码登录' }}</h3>
+      <a href="#" @click="isPass = !isPass">
+        <span>{{ isPass ? '验证码登录' : '密码登录' }}</span>
         <VanIcon name="arrow"></VanIcon>
       </a>
     </div>
-    <VanForm aria-autocomplete="off" @submit="login">
+    <VanForm aria-autocomplete="off" @submit="login" ref="form">
       <VanField
         placeholder="请输入手机号"
         type="tel"
@@ -48,6 +86,7 @@ const login = async () => {
         :rules="mobileRule"
         label="手机号"
         colon
+        name="mobile"
       ></VanField>
       <VanField
         placeholder="请输入密码"
@@ -56,6 +95,7 @@ const login = async () => {
         :rules="passwordRule"
         label="密码"
         colon
+        v-if="isPass"
       >
         <template #right-icon>
           <UseIcon
@@ -64,8 +104,23 @@ const login = async () => {
           />
         </template>
       </VanField>
+      <VanField
+        placeholder="请输入验证码"
+        type="text"
+        v-model="code"
+        :rules="codeRule"
+        label="验证码"
+        colon
+        v-else
+      >
+        <template #button>
+          <span class="btn-send" @click="send">
+            {{ time > 0 ? `${time}s后再次发送` : '发送验证码' }}</span
+          >
+        </template>
+      </VanField>
 
-      <div class="forget">
+      <div class="forget" v-if="isPass">
         <a href="#">忘记密码?</a>
       </div>
 
