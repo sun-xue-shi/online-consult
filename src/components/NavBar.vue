@@ -3,6 +3,9 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const onClickLeft = () => {
+  if (props.back) {
+    return props.back()
+  }
   if (history.state.back) {
     router.back()
   } else {
@@ -10,9 +13,10 @@ const onClickLeft = () => {
   }
 }
 
-defineProps<{
+const props = defineProps<{
   title: string
-  right: string
+  right?: string
+  back?: () => void
 }>()
 
 const emit = defineEmits<{

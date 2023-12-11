@@ -30,3 +30,20 @@ export type UserInfo = Omit<User, 'token'> & {
     finishedNumber: number
   }
 }
+
+// 患者信息
+export type Patient = {
+  id?: string
+
+  name: string
+
+  idCard: string
+
+  defaultFlag: 0 | 1
+
+  gender: 0 | 1
+
+  genderValue?: string
+
+  age?: number
+}

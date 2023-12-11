@@ -40,6 +40,20 @@ const routes = [
         }
       }
     ]
+  },
+  {
+    path: '/user/patient',
+    component: () => import('@/views/user/PatientPage.vue'),
+    meta: {
+      title: '家庭档案'
+    }
+  },
+  {
+    path: '/user/consult',
+    component: () => import('@/views/user/ConsultPage.vue'),
+    meta: {
+      title: '我的问诊'
+    }
   }
 ]
 
