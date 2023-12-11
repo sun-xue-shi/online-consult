@@ -11,3 +11,5 @@ export const sendCode = (mobile: string, type: string) =>
 
 export const loginByMobile = (mobile: string, code: string) =>
   request.post('/login', { mobile, code })
+
+export const getUserInfo = () => request.get('/patient/myUser')
