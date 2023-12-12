@@ -5,6 +5,7 @@ import { showToast, type FormInstance } from 'vant'
 import { loginByPassword, sendCode, loginByMobile } from '@/api/user'
 import { useUserStore } from '@/stores'
 import { useRouter, useRoute } from 'vue-router'
+import { useMobileCode } from '@/hooks/index'
 // import { AxiosResponse } from 'axios'
 
 const onClickRight = () => {
@@ -35,37 +36,8 @@ const login = async () => {
 }
 
 const isPass = ref(true)
-const code = ref('')
-const form = ref<FormInstance>()
-const time = ref(0)
-let timer: number
-// 发送验证码
-const send = async () => {
-  if (time.value > 0) return
-  try {
-    console.log('4')
 
-    await form.value?.validate('mobile')
-    console.log('6')
-
-    const res = await sendCode(mobile.value, 'login')
-    console.log('5')
-
-    code.value = res.data.code
-    showToast('发送成功')
-    time.value = 60
-    timer = window.setInterval(() => {
-      time.value--
-      if (time.value <= 0) window.clearInterval(timer)
-    }, 1000)
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-onUnmounted(() => {
-  window.clearInterval(timer)
-})
+const { form, onSend, time, code } = useMobileCode(mobile, 'login')
 </script>
 
 <template>
@@ -114,7 +86,7 @@ onUnmounted(() => {
         v-else
       >
         <template #button>
-          <span class="btn-send" @click="send">
+          <span class="btn-send" @click="onSend">
             {{ time > 0 ? `${time}s后再次发送` : '发送验证码' }}</span
           >
         </template>
