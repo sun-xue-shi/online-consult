@@ -15,3 +15,14 @@ export const loginByMobile = (mobile: string, code: string) =>
 export const getUserInfo = () => request.get<UserInfo>('/patient/myUser')
 
 export const getPatientInfo = () => request.get<Patient[]>('/patient/mylist')
+
+export const addPatient = (patient: Patient) => {
+  return request.post<Patient>('/patient/add', patient)
+}
+
+export const editPatient = (patient: Patient) => {
+  return request.put<Patient>('/patient/update', patient)
+}
+
+// 删除患者
+export const delPatient = (id: string) => request.delete(`patient/del/${id}`)

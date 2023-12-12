@@ -5,5 +5,6 @@ declare module 'vue' {
   interface GlobalComponents {
     NavBar: typeof NavBar
     UseIcon: typeof UseIcon
+    RadioButton: typeof RadioButton
   }
 }
