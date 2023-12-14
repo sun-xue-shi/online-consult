@@ -1,3 +1,5 @@
+import type { ConsultType, IllnessTime } from '@/enums'
+
 // 文章信息类型
 export type Knowledge = {
   id: string
@@ -52,3 +54,150 @@ export type KnowledgeParams = PageParams & {
 
 // 关注的目标类型：topic百科话题,knowledge百科文章,doc医生,disease疾病
 export type FollowType = 'topic' | 'knowledge' | 'doc' | 'disease'
+
+// 医生卡片对象
+export type Doctor = {
+  id: string
+
+  name: string
+
+  avatar: string
+
+  hospitalName: string
+  /** 医院等级 */
+  gradeName: string
+  /** 科室 */
+  depName: string
+  /** 职称 */
+  positionalTitles: string
+  /** 是否关注，0 未关注 1 已关注 */
+  likeFlag: 0 | 1
+  /** 接诊服务费 */
+  serviceFee: number
+  /** 接诊人数 */
+  consultationNum: number
+  /** 评分 */
+  score: number
+  /** 主攻方向 */
+  major: string
+}
+
+// 医生分页
+export type DoctorPage = {
+  pageTotal: number
+  total: number
+  rows: Doctor[]
+}
+
+// 关注的目标类型：topic百科话题,knowledge百科文章,doc医生,disease疾病
+export type FollowType = 'topic' | 'knowledge' | 'doc' | 'disease'
+
+// 图片列表
+export type Image = {
+  id: string
+
+  url: string
+}
+
+// 问诊记录
+export type Consult = {
+  id: string
+  /** 问诊类型 */
+  type: ConsultType
+  /** 快速问诊类型，0 普通 1 三甲 */
+  illnessType: 0 | 1
+  /** 科室ID */
+  depId: string
+  /** 疾病描述 */
+  illnessDesc: string
+  /** 疾病持续时间 */
+  illnessTime: IllnessTime
+  /** 是否就诊过，0 未就诊过  1 就诊过 */
+  consultFlag: 0 | 1
+
+  pictures: Image[]
+
+  patientId: string
+  /** 优惠券ID */
+  couponId: string
+}
+
+// Partial<T> 把一个对象的属性转换成可选
+export type PartialConsult = Partial<Consult>
+// Required<T> 把一个对象的属性转换成必选
+// type RequiredConsult = Required<PartialConsult>
+
+// 二级科室
+type SubDep = {
+  id: string
+  name: string
+}
+// 一级科室
+type TopDep = SubDep & {
+  child: SubDep[]
+}
+
+// 病情描述对象
+type ConsultIllness = Pick<
+  PartialConsult,
+  'illnessDesc' | 'illnessTime' | 'consultFlag' | 'pictures'
+>
+
+// 问诊订单预支付传参
+export type ConsultOrderPreParams = Pick<PartialConsult, 'type' | 'illnessType'>
+
+// 问诊订单预支付信息
+export type ConsultOrderPreData = {
+  /** 积分抵扣 */
+  pointDeduction: number
+  /** 优惠券抵扣 */
+  couponDeduction: number
+  /** 优惠券ID */
+  couponId: string
+  /** 需付款 */
+  payment: number
+  /** 实付款 */
+  actualPayment: number
+}
+
+// 问诊订单单项信息
+export type ConsultOrderItem = Consult & {
+  /** 创建时间 */
+  createTime: string
+  /** 医生信息 */
+  docInfo?: Doctor
+  /** 患者信息 */
+  patientInfo: Patient
+  /** 订单编号 */
+  orderNo: string
+  /** 订单状态 */
+  status: OrderType
+  /** 状态文字 */
+  statusValue: string
+  /** 类型问诊文字 */
+  typeValue: string
+  /** 倒计时时间 */
+  countdown: number
+  /** 处方ID */
+  prescriptionId?: string
+  /** 评价ID */
+  evaluateId: number
+  /** 应付款 */
+  payment: number
+  /** 优惠券抵扣 */
+  couponDeduction: number
+  /** 积分抵扣 */
+  pointDeduction: number
+  /** 实付款 */
+  actualPayment: number
+}
+
+export type ConsultOrderListParams = PageParams & {
+  type: ConsultType
+}
+
+export type ConsultOrderPage = {
+  total: number
+  pageTotal: number
+  rows: ConsultOrderItem[]
+}

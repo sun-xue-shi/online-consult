@@ -1,0 +1,62 @@
+/**
+ * 问诊数据
+ */
+
+import type { ConsultType } from '@/enums'
+import type { PartialConsult } from '@/types/home'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
+
+export const useConsultStore = defineStore(
+  'consult',
+  () => {
+    const consult = ref<PartialConsult>({})
+
+    const setType = (type: ConsultType) => {
+      consult.value.type = type
+    }
+
+    const setIllness = (
+      illness: Pick<PartialConsult, 'illnessDesc' | 'illnessTime' | 'consultFlag' | 'pictures'>
+    ) => {
+      consult.value = illness
+    }
+
+    const setIllnessType = (type: 0 | 1) => {
+      consult.value.illnessType = type
+    }
+
+    const setPatientId = (patientId: string) => {
+      consult.value.patientId = patientId
+    }
+
+    const setCouponId = (couponId: string) => {
+      consult.value.couponId = couponId
+    }
+
+    const setDepId = (depId: string) => {
+      consult.value.depId = depId
+    }
+
+    const clear = () => {
+      consult.value = {}
+    }
+    return {
+      consult,
+      setCouponId,
+      setPatientId,
+      setType,
+      setIllness,
+      clear,
+      setIllnessType,
+      setDepId
+    }
+  },
+  // pinia定制化
+  {
+    persist: {
+      key: 'consult',
+      paths: ['consult']
+    }
+  }
+)

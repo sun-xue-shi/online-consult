@@ -54,6 +54,27 @@ const routes = [
     meta: {
       title: '我的问诊'
     }
+  },
+  {
+    path: '/consult/fast',
+    component: () => import('@/views/consult/ConsultFast.vue'),
+    meta: {
+      title: '快速问诊'
+    }
+  },
+  {
+    path: '/consult/dep',
+    component: () => import('@/views/consult/ConsultDep.vue'),
+    meta: {
+      title: '科室选择'
+    }
+  },
+  {
+    path: '/consult/illness',
+    component: () => import('@/views/consult/ConsultIllness.vue'),
+    meta: {
+      title: '科室选择'
+    }
   }
 ]
 
