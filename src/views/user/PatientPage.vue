@@ -3,7 +3,7 @@ import { getPatientInfo, addPatient, editPatient, delPatient } from '@/api/user'
 import type { Patient } from '@/types/user'
 import { ref, onMounted, watch } from 'vue'
 import { showConfirmDialog, type FormInstance, showSuccessToast } from 'vant'
-// import Validator from 'id-validator'
+
 import { nameRules, idCardRules } from '@/utils/rule'
 
 const patientList = ref<Patient[]>([])
@@ -54,7 +54,7 @@ watch(defaultFlag, () => {
 
 // 格式校验及表单提交
 const form = ref<FormInstance>()
-// const cardValid = new Validator()
+
 const submit = async () => {
   await form.value?.validate()
   const gender = +patient.value.idCard.slice(-2, -1) % 2

@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import KnowledgeList from './components/KnowledgeList.vue'
+import FollowDoctor from './components/FollowDoctor.vue'
+import { useConsultStore } from '@/stores'
+
 const active = ref(1)
+
+const consultStore = useConsultStore()
 </script>
 
 <template>
@@ -26,7 +31,7 @@ const active = ref(1)
           </router-link>
         </van-col>
         <van-col span="8">
-          <router-link to="/" class="nav">
+          <router-link to="/consult/fast" @click="consultStore.setType(2)" class="nav">
             <UseIcon name="home-graphic" />
             <p class="title">极速问诊</p>
             <p class="desc">20s医生极速回复</p>
@@ -80,7 +85,10 @@ const active = ref(1)
     </div>
     <!-- TAB -->
     <van-tabs shrink sticky v-model:active="active" swipeable>
-      <van-tab title="关注"><KnowledgeList type="like" /> </van-tab>
+      <van-tab title="关注">
+        <FollowDoctor></FollowDoctor>
+        <KnowledgeList type="like" />
+      </van-tab>
       <van-tab title="推荐"><KnowledgeList type="recommend" /> </van-tab>
       <van-tab title="减脂"><KnowledgeList type="fatReduction" /> </van-tab>
       <van-tab title="饮食"><KnowledgeList type="food" /> </van-tab>

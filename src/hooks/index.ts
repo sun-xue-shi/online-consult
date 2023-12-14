@@ -1,4 +1,6 @@
+import { followOrUnfollow } from '@/api/home'
 import { sendCode } from '@/api/user'
+import type { Doctor, FollowType } from '@/types/home'
 import { showToast, type FormInstance } from 'vant'
 import { onUnmounted, ref, type Ref } from 'vue'
 
@@ -35,5 +37,25 @@ export const useMobileCode = (mobile: Ref<string>, type: string) => {
     time,
     form,
     code
+  }
+}
+
+export const useFollow = (type: FollowType = 'doc') => {
+  const isLoading = ref(false)
+  const follow = async (item: { id: string; likeFlag: 0 | 1 }) => {
+    isLoading.value = true
+    try {
+      await followOrUnfollow(item.id, type)
+      item.likeFlag = item.likeFlag === 1 ? 0 : 1
+    } catch (error) {
+      console.error(error)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  return {
+    follow,
+    isLoading
   }
 }

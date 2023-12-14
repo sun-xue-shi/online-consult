@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref } from 'vue'
 import { mobileRule, passwordRule, codeRule } from '@/utils/rule'
-import { showToast, type FormInstance } from 'vant'
-import { loginByPassword, sendCode, loginByMobile } from '@/api/user'
+import { showToast } from 'vant'
+import { loginByPassword, loginByMobile } from '@/api/user'
 import { useUserStore } from '@/stores'
 import { useRouter, useRoute } from 'vue-router'
 import { useMobileCode } from '@/hooks/index'
