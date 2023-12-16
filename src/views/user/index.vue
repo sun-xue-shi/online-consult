@@ -32,8 +32,6 @@ const tools = [
 const userStore = useUserStore()
 const router = useRouter()
 const logout = async () => {
-  console.log('5')
-
   await showConfirmDialog({
     title: '提示',
     message: '是否退出登录'

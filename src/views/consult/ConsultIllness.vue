@@ -1,8 +1,80 @@
-<script setup lang="ts"></script>
+<!-- eslint-disable prettier/prettier -->
+<script setup lang="ts">
+import type { ConsultIllness, Image } from '@/types/home'
+import { ref, computed, onMounted } from 'vue'
+import { useConsultStore } from '@/stores'
+import { useRouter } from 'vue-router'
+import { showConfirmDialog } from 'vant'
+import { type UploaderAfterRead } from 'vant/lib/uploader/types'
+
+const timeOptions = [
+  {
+    label: '一天内',
+    value: 0
+  },
+  { label: '一月内', value: 1 },
+  {
+    label: '半年内',
+    value: 3
+  },
+  { label: '大于半年', value: 4 }
+]
+
+const consultOptions = [
+  {
+    label: '就诊过',
+    value: 0
+  },
+  { label: '未就诊过', value: 1 }
+]
+
+const formData = ref<ConsultIllness>({
+  pictures: [],
+  illnessTime: undefined,
+  illnessDesc: '',
+  consultFlag: undefined
+})
+
+const disabled = computed(() => {
+  return !formData.value.consultFlag || !formData.value.illnessDesc || !formData.value.illnessTime
+})
+
+const consultStore = useConsultStore()
+const router = useRouter()
+const onNext = () => {
+  consultStore.setIllness(formData.value)
+  router.push('/user/patient?isSel=2')
+}
+
+onMounted(async () => {
+  if (consultStore.consult.illnessDesc) {
+    const isRecover = ref(false)
+    await showConfirmDialog({
+      title: '提示',
+      message: '是否恢复上一次数据',
+      closeOnPopstate: false
+    })
+    isRecover.value = true
+    if (isRecover.value) {
+      formData.value = consultStore.consult
+    }
+  }
+})
+
+const fileList = ref([])
+const onAfterRead: UploaderAfterRead = (item) => {
+  if (Array.isArray(item)) return
+  if (!item.file) return
+  item.status = 'uploading'
+  item.message = '图片上传中...'
+  
+}
+const onDeleteImg = () => {}
+</script>
 
 <template>
   <div class="consult-illness-page">
-    <cp-nav-bar title="图文问诊" />
+    <nav-bar title="图文问诊" />
     <!-- 医生提示 -->
     <div class="illness-tip van-hairline--bottom">
       <img class="img" src="@/assets/avatar-doctor.svg" />
@@ -18,14 +90,15 @@
         type="textarea"
         rows="3"
         placeholder="请详细描述您的病情，病情描述不能为空"
+        v-model="formData.illnessDesc"
       ></van-field>
       <div class="item">
         <p>本次患病多久了？</p>
-        <RadioButton />
+        <RadioButton :options="timeOptions" v-model="formData.illnessTime" />
       </div>
       <div class="item">
         <p>此次病情是否去医院就诊过？</p>
-        <RadioButton />
+        <RadioButton :options="consultOptions" v-model="formData.consultFlag" />
       </div>
       <!-- 上传组件 -->
       <div class="illness-img">
@@ -34,11 +107,16 @@
           upload-text="上传图片"
           max-count="9"
           :max-size="5 * 1024 * 1024"
+          v-model="fileList"
+          :after-read="onAfterRead"
+          @delete="onDeleteImg"
         ></van-uploader>
         <p class="tip" v-if="true">上传内容仅医生可见,最多9张图,最大5MB</p>
       </div>
       <!-- 下一步 -->
-      <van-button type="primary" block round> 下一步 </van-button>
+      <van-button type="primary" block round :disabled="disabled" @click="onNext">
+        下一步
+      </van-button>
     </div>
   </div>
 </template>
