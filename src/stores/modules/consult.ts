@@ -3,7 +3,7 @@
  */
 
 import type { ConsultType } from '@/enums'
-import type { PartialConsult } from '@/types/home'
+import type { ConsultIllness, PartialConsult } from '@/types/home'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -16,9 +16,7 @@ export const useConsultStore = defineStore(
       consult.value.type = type
     }
 
-    const setIllness = (
-      illness: Pick<PartialConsult, 'illnessDesc' | 'illnessTime' | 'consultFlag' | 'pictures'>
-    ) => {
+    const setIllness = (illness: ConsultIllness) => {
       consult.value = illness
     }
 

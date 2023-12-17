@@ -5,7 +5,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useConsultStore } from '@/stores'
 import { useRouter } from 'vue-router'
 import { showConfirmDialog } from 'vant'
-import { type UploaderAfterRead } from 'vant/lib/uploader/types'
+import { type UploaderAfterRead, type UploaderFileListItem } from 'vant/lib/uploader/types'
+import { uploadImage } from '@/api/consult'
 
 const timeOptions = [
   {
@@ -43,9 +44,10 @@ const consultStore = useConsultStore()
 const router = useRouter()
 const onNext = () => {
   consultStore.setIllness(formData.value)
-  router.push('/user/patient?isSel=2')
+  router.push('/user/patient?isSel=1')
 }
 
+// 数据回显
 onMounted(async () => {
   if (consultStore.consult.illnessDesc) {
     const isRecover = ref(false)
@@ -67,9 +69,21 @@ const onAfterRead: UploaderAfterRead = (item) => {
   if (!item.file) return
   item.status = 'uploading'
   item.message = '图片上传中...'
-  
+  uploadImage(item.file)
+    .then((res) => {
+      item.status = 'done'
+      item.message = undefined
+      item.url = res.data.url
+      formData.value.pictures?.push(res.data)
+    })
+    .catch(() => {
+      item.status = 'failed'
+      item.message = '图片上传失败'
+    })
 }
-const onDeleteImg = () => {}
+const onDeleteImg = (item: UploaderFileListItem) => {
+  formData.value.pictures = formData.value.pictures?.filter((pic) => pic.url !== item.url)
+}
 </script>
 
 <template>
@@ -105,7 +119,7 @@ const onDeleteImg = () => {}
         <van-uploader
           upload-icon="photo-o"
           upload-text="上传图片"
-          max-count="9"
+          max-count="5"
           :max-size="5 * 1024 * 1024"
           v-model="fileList"
           :after-read="onAfterRead"
