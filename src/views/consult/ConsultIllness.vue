@@ -37,7 +37,11 @@ const formData = ref<ConsultIllness>({
 })
 
 const disabled = computed(() => {
-  return !formData.value.consultFlag || !formData.value.illnessDesc || !formData.value.illnessTime
+  return (
+    formData.value.consultFlag === undefined ||
+    !formData.value.illnessDesc ||
+    formData.value.illnessTime === undefined
+  )
 })
 
 const consultStore = useConsultStore()
@@ -128,7 +132,7 @@ const onDeleteImg = (item: UploaderFileListItem) => {
         <p class="tip" v-if="true">上传内容仅医生可见,最多9张图,最大5MB</p>
       </div>
       <!-- 下一步 -->
-      <van-button type="primary" block round :disabled="disabled" @click="onNext">
+      <van-button type="primary" block round :class="{ disabled }" @click="onNext">
         下一步
       </van-button>
     </div>

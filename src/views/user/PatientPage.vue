@@ -19,6 +19,7 @@ const getPatientData = async () => {
       patientId.value = patientList.value[0].id
     }
   }
+  consultStore.setPatientId(patientId.value!)
 }
 
 onMounted(() => {
@@ -35,7 +36,6 @@ const openPopup = (item?: Patient) => {
     patient.value = {} as Patient
   }
   isShow.value = true
-
   defaultFlag.value = false
 }
 
