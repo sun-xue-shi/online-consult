@@ -26,3 +26,22 @@ export const editPatient = (patient: Patient) => {
 
 // 删除患者
 export const delPatient = (id: string) => request.delete(`patient/del/${id}`)
+
+// 患者详情
+export const getPatientDetail = (id: string) => {
+  return request.get<Patient>(`patient/info/${id}`)
+}
+
+export const getUnreadMessageCount = () => {
+  return request.get<number>('patient/message/unRead/all')
+}
+
+export const loginByQQ = (openId: string) =>
+  request.post<User>('login/thirdparty', {
+    openId,
+    source: 'qq'
+  })
+
+export const bindMobile = (data: { mobile: string; code: string; openId: string }) => {
+  return request.post<User>('login/binding', data)
+}
