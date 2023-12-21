@@ -7,6 +7,10 @@ import { useConsultStore } from '@/stores'
 const active = ref(1)
 
 const consultStore = useConsultStore()
+const setConsultType = () => {
+  consultStore.setType(2)
+  // console.log(consultStore.consult.type)
+}
 </script>
 
 <template>
@@ -31,7 +35,7 @@ const consultStore = useConsultStore()
           </router-link>
         </van-col>
         <van-col span="8">
-          <router-link to="/consult/fast" @click="consultStore.setType(2)" class="nav">
+          <router-link to="/consult/fast" @click="setConsultType" class="nav">
             <UseIcon name="home-graphic" />
             <p class="title">极速问诊</p>
             <p class="desc">20s医生极速回复</p>

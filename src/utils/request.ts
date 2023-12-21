@@ -3,7 +3,7 @@ import { useUserStore } from '@/stores'
 import axios from 'axios'
 import { showToast } from 'vant'
 
-const baseURL = 'https://consult-api.itheima.net/'
+export const baseURL = 'https://consult-api.itheima.net/'
 export const request = axios.create({
   baseURL,
   timeout: 10000

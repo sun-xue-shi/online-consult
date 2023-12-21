@@ -42,6 +42,7 @@ export type Patient = {
   defaultFlag: 0 | 1
 
   gender: number
+  genderValue?: 0 | 1
 
   age?: number
 }

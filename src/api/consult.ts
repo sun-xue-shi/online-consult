@@ -8,12 +8,14 @@ import type {
   ConsultOrderPreParams
 } from '@/types/consult'
 
+// 上传图片
 export const uploadImage = (file: File) => {
   const fd = new FormData()
   fd.append('file', file)
   return request.post<Image>('upload', fd)
 }
 
+// 获取预支付订单信息
 export const getConsultOrderPre = (params: ConsultOrderPreParams) =>
   request.get<ConsultOrderPreData>('patient/consult/order/pre', { params })
 
@@ -21,6 +23,7 @@ export const getConsultOrderPre = (params: ConsultOrderPreParams) =>
 export const createConsultOrder = (data: PartialConsult) =>
   request.post<{ id: string }>('patient/consult/order', data)
 
+// 获取支付地址
 export const getConsultOrderPayUrl = (params: {
   paymentMethod: 0 | 1
   orderId: string

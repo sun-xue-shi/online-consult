@@ -17,7 +17,10 @@ export const useConsultStore = defineStore(
     }
 
     const setIllness = (illness: ConsultIllness) => {
-      consult.value = illness
+      consult.value.illnessDesc = illness.illnessDesc
+      consult.value.illnessTime = illness.illnessTime
+      consult.value.consultFlag = illness.consultFlag
+      consult.value.pictures = illness.pictures
     }
 
     const setIllnessType = (type: 0 | 1) => {

@@ -4,6 +4,10 @@ import { useRouter } from 'vue-router'
 
 const consultStore = useConsultStore()
 const router = useRouter()
+const setIllnessType = (type: 0 | 1) => {
+  consultStore.setIllnessType(type)
+  // console.log(consultStore.consult.illnessType)
+}
 </script>
 
 <template>
@@ -14,7 +18,7 @@ const router = useRouter()
       <p class="text"><span>20s</span> 快速匹配专业医生</p>
     </div>
     <div class="fast-type">
-      <router-link to="/consult/dep" class="item" @click="consultStore.setIllnessType(1)">
+      <router-link to="/consult/dep" class="item" @click="setIllnessType(1)">
         <UseIcon class="pic" name="consult-doctor"></UseIcon>
         <div class="info">
           <p>三甲图文问诊</p>
@@ -22,7 +26,7 @@ const router = useRouter()
         </div>
         <van-icon name="arrow"></van-icon>
       </router-link>
-      <router-link to="/consult/dep" class="item" @click="consultStore.setIllnessType(0)">
+      <router-link to="/consult/dep" class="item" @click="setIllnessType(0)">
         <UseIcon class="pic" name="consult-message"></UseIcon>
         <div class="info">
           <p>普通图文问诊</p>

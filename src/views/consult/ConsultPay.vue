@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useConsultStore } from '@/stores'
 import type { Patient } from '@/types/user'
-import { createConsultOrder, getConsultOrderPre } from '@/api/consult'
+import { createConsultOrder, getConsultOrderPayUrl, getConsultOrderPre } from '@/api/consult'
 import type { ConsultOrderPreParams, ConsultOrderPreData } from '@/types/consult'
-import { showConfirmDialog, showDialog, showFailToast } from 'vant'
+import { showConfirmDialog, showDialog, showFailToast, showLoadingToast } from 'vant'
 import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, onBeforeRouteLeave } from 'vue-router'
 import { getPatientDetail } from '@/api/user'
 
 const consultStore = useConsultStore()
@@ -14,11 +14,15 @@ const router = useRouter()
 // 订单预支付信息
 const payInfo = ref<ConsultOrderPreData>()
 const getPayInfo = async () => {
+  console.log(consultStore.consult.illnessType)
+  console.log(consultStore.consult.type)
+
   try {
     const res = await getConsultOrderPre({
       type: consultStore?.consult?.type,
       illnessType: consultStore?.consult?.illnessType
     })
+
     payInfo.value = res.data
     consultStore.setCouponId(res.data.couponId)
   } catch (error) {
@@ -44,7 +48,7 @@ const isShow = ref(false)
 const agree = ref(false)
 const payMethod = ref<0 | 1>()
 const orderId = ref()
-const isLoading = ref(false)
+// const isLoading = ref(false)
 const openPay = async () => {
   if (!agree.value) return showFailToast('请勾选支付协议')
 
@@ -52,6 +56,41 @@ const openPay = async () => {
   orderId.value = (await res).data.id
   consultStore.clear()
   isShow.value = true
+}
+
+// 取消支付
+const onBeforeClose = async () => {
+  try {
+    await showConfirmDialog({
+      message: '取消支付将无法获得医生回复,是否关闭?',
+      title: '关闭支付',
+      confirmButtonText: '继续支付',
+      cancelButtonText: '狠心离开'
+    })
+    return false
+  } catch (error) {
+    console.log(error)
+    orderId.value = ''
+    router.push('/user/consult')
+    return false
+  }
+}
+
+// 如果已经创建订单有了id，就不让返回
+onBeforeRouteLeave(() => {
+  if (orderId.value) return false
+})
+
+// 支付
+const payOrder = async () => {
+  if (!payMethod.value) return showFailToast('请选择支付方式')
+  showLoadingToast('正在跳转支付~')
+  const res = await getConsultOrderPayUrl({
+    payCallback: 'http://localhost:5173/room',
+    paymentMethod: payMethod.value,
+    orderId: orderId.value
+  })
+  window.location.href = res.data.payUrl
 }
 </script>
 
@@ -92,7 +131,36 @@ const openPay = async () => {
       @click="openPay"
     />
     <!-- 支付抽屉，控制面板 -->
-    <VanActionSheet :show="isShow" title="请选择支付方式" />
+    <VanActionSheet
+      :show="isShow"
+      title="请选择支付方式"
+      :close-on-popstate="false"
+      :before-close="onBeforeClose"
+      @click="onBeforeClose"
+    >
+      <div class="pay-type">
+        <p class="amount">￥ {{ payInfo?.actualPayment.toFixed(2) }}</p>
+        <van-cell-group>
+          <van-cell title="微信支付" @click="payMethod = 0" class="cell">
+            <template #icon><UseIcon name="consult-wechat" /></template>
+            <template #extra>
+              <van-checkbox :checked="payMethod === 0" />
+            </template>
+          </van-cell>
+          <van-cell title="支付宝支付" @click="payMethod = 1" class="cell">
+            <template #icon>
+              <UseIcon name="consult-alipay" class="icon" />
+            </template>
+            <template #extra>
+              <van-checkbox :checked="payMethod === 1" />
+            </template>
+          </van-cell>
+        </van-cell-group>
+        <div class="btn">
+          <van-button type="primary" round block @click="payOrder"> 立即支付 </van-button>
+        </div>
+      </div>
+    </VanActionSheet>
   </div>
   <div class="consult-pay-page" v-else>
     <NavBar title="支付" />
@@ -104,6 +172,27 @@ const openPay = async () => {
 <style lang="scss" scoped>
 .consult-pay-page {
   padding: 46px 0 50px 0;
+  .pay-type {
+    .amount {
+      padding: 20px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .btn {
+      padding: 15px;
+    }
+    .cell {
+      align-items: center;
+      .icon {
+        margin-right: 10px;
+        font-size: 18px;
+      }
+      .van-checkbox :deep(.van-checkbox__icon) {
+        font-size: 16px;
+      }
+    }
+  }
 }
 .pay-info {
   display: flex;

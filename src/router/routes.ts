@@ -82,6 +82,13 @@ const routes = [
     meta: {
       title: '订单支付'
     }
+  },
+  {
+    path: '/room',
+    component: () => import('@/views/room/index.vue'),
+    meta: {
+      title: '问诊室'
+    }
   }
 ]
 
