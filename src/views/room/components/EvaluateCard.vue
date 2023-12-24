@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import type { ConsultOrderItem } from '@/types/consult'
-import { showToast } from 'vant'
-import { ref, computed, inject } from 'vue'
-import type { Ref } from 'vue'
-
+// import type { ConsultOrderItem } from '@/types/consult'
+// import { showToast } from 'vant'
+// import { ref, computed, inject } from 'vue'
+// import type { Ref } from 'vue'
 
 // 注入问诊订单
 

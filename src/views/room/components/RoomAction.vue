@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // import type { Image } from '@/types/consult'
-import { showLoadingToast } from 'vant'
-import type { UploaderAfterRead } from 'vant/lib/uploader/types'
-import { ref } from 'vue'
+// import { showLoadingToast } from 'vant'
+// import type { UploaderAfterRead } from 'vant/lib/uploader/types'
+// import { ref } from 'vue'
 
 // 提交图片
 </script>
