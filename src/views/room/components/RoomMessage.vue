@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { MsgType, PrescriptionStatus } from '@/enums'
+import { ConsultType, IllnessTime, MsgType, PrescriptionStatus } from '@/enums'
 import { useUserStore } from '@/stores'
-// import type { Image } from '@/types/consult'
 // import dayjs from 'dayjs'
 // import { showImagePreview, showToast } from 'vant'
 import EvaluateCard from './EvaluateCard.vue'
 import { useRouter } from 'vue-router'
 import type { Message } from '@/types/room'
+import { timeOptions, consultOptions } from '@/api/const'
+import type { Image } from '@/types/home'
+import { showImagePreview } from 'vant'
 
 defineProps<{
   listItem: Message
@@ -18,27 +20,43 @@ const store = useUserStore()
 
 // 跳转支付
 const router = useRouter()
+
+const formatIllness = (value: IllnessTime) => {
+  return timeOptions.find((item) => item.value === value)?.label
+}
+
+const formatFlag = (value: 0 | 1) => {
+  return consultOptions.find((item) => item.value === value)?.label
+}
+
+const previewImg = (pictures: Image[]) => {
+  if (pictures && pictures.length) {
+    showImagePreview(pictures.map((item) => item.url))
+  }
+}
 </script>
 
 <template>
   <!-- 患者卡片 -->
   <div class="msg msg-illness" v-if="listItem.msgType === MsgType.CardPat">
     <div class="patient van-hairline--bottom">
-      <p>
+      <h2>
         {{ listItem.msg.consultRecord?.patientInfo.name }}
         {{ listItem.msg.consultRecord?.patientInfo.genderValue }}
         {{ listItem.msg.consultRecord?.patientInfo.age }}岁
-      </p>
+      </h2>
       <p>
-        {{ listItem.msg.consultRecord.illnessTime }}
-        {{ listItem.msg.consultRecord.consultFlag }}
+        {{ formatIllness(listItem.msg.consultRecord.illnessTime) }}
+        {{ formatFlag(listItem.msg.consultRecord.consultFlag) }}
       </p>
     </div>
     <van-row>
       <van-col span="6">病情描述</van-col>
       <van-col span="18">{{ listItem.msg.consultRecord.patientInfo.illnessDesc }}</van-col>
       <van-col span="6">图片</van-col>
-      <van-col span="18">点击查看</van-col>
+      <van-col span="18" @click="previewImg(listItem.msg.consultRecord.pictures)">
+        {{ listItem.msg.consultRecord.pictures.length ? '点击查看' : '无' }}</van-col
+      >
     </van-row>
   </div>
   <!-- 通知-通用 -->
@@ -125,4 +143,7 @@ const router = useRouter()
 
 <style lang="scss" scoped>
 @import '@/styles/room.scss';
+h2 {
+  font-size: 18px;
+}
 </style>
