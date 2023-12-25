@@ -2,19 +2,30 @@
 // import type { Image } from '@/types/consult'
 // import { showLoadingToast } from 'vant'
 // import type { UploaderAfterRead } from 'vant/lib/uploader/types'
-// import { ref } from 'vue'
+import { ref } from 'vue'
 
 // 提交图片
+
+// 发送消息
+const text = ref('')
+const emit = defineEmits<{
+  (e: 'sent-text', data: string): void
+}>()
+const sentText = () => {
+  emit('sent-text', text.value)
+}
 </script>
 
 <template>
   <div class="room-action">
     <van-field
+      v-model="text"
       type="text"
       class="input"
       :border="false"
       placeholder="问医生"
       autocomplete="off"
+      @keyup.enter="sentText"
     ></van-field>
     <van-uploader :preview-image="false">
       <UseIcon name="consult-img" />

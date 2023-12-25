@@ -71,7 +71,9 @@ onUnmounted(() => {
 })
 
 // 发送文字信息
-
+const sentText = (text: string) => {
+  console.log(text)
+}
 // 发送图片信息
 
 // 下拉刷新
@@ -85,10 +87,10 @@ const loading = ref(false)
     <room-status></room-status>
     <van-pull-refresh v-model="loading">
       <!-- 消息 -->
-      <room-message v-for="item in messageList" :key="item.id" :listItem="item" ></room-message>
+      <room-message v-for="item in messageList" :key="item.id" :listItem="item"></room-message>
     </van-pull-refresh>
     <!-- 操作栏 -->
-    <room-action></room-action>
+    <room-action @sent-text="sentText"></room-action>
   </div>
 </template>
 
