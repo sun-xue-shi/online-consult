@@ -24,14 +24,20 @@ export const createConsultOrder = (data: PartialConsult) =>
   request.post<{ id: string }>('patient/consult/order', data)
 
 // 获取支付地址
-export const getConsultOrderPayUrl = (params: {
+export const getConsultOrderPayUrl = (data: {
   paymentMethod: 0 | 1
   orderId: string
   payCallback: string
-}) => request.post<{ payUrl: string }>('patient/consult/pay', params)
+}) => request.post<{ payUrl: string }>('/patient/consult/pay', data)
 
-export const getConsultOrderDetail = (orderId: string) =>
-  request.get<ConsultOrderItem>('patient/consult/order/detail')
+// 订单详情数据
+export const getConsultOrderDetail = (orderId: string) => {
+  return request.get<ConsultOrderItem>('patient/consult/order/detail', {
+    params: {
+      orderId
+    }
+  })
+}
 
 export const getPrescriptionPic = (id: string) =>
   request<{ url: string }>(`patient/consult/prescription/${id}`)

@@ -9,12 +9,18 @@ import { useRoute } from 'vue-router'
 import { MsgType, OrderType } from '@/enums'
 import { ref, nextTick, provide } from 'vue'
 // import type { ConsultOrderItem, Image } from '@/types/consult'
-// import dayjs from 'dayjs'
+import dayjs from 'dayjs'
 // import { showToast } from 'vant'
 import { baseURL } from '@/utils/request'
 import type { Message, TimeMessages } from '@/types/room'
 
+import { getConsultOrderDetail } from '@/api/consult'
+import type { ConsultOrderItem } from '@/types/consult'
+import type { Image } from '@/types/home'
+
 // 提供问诊订单数据给后代组件
+
+// 建立连接
 const messageList = ref<Message[]>([])
 const userStore = useUserStore()
 const route = useRoute()
@@ -55,12 +61,20 @@ const initSocket = () => {
     })
     messageList.value.push(...result)
   })
+
+  // 获取医生回复
+  socket.on('receiveChatMsg', async (msg) => {
+    messageList.value.push(msg)
+    await nextTick()
+    // 接收完消息后滚动到最底部
+    window.scrollTo(0, document.body.scrollHeight)
+  })
+
+  // 订单状态变化
+  socket.on('statusChange', () => {
+    getOrderDetail()
+  })
 }
-
-onMounted(() => {
-  initSocket()
-})
-
 // 获取聊天记录，如果是第一次（默认消息）
 
 // 监听订单状态变化
@@ -71,26 +85,57 @@ onUnmounted(() => {
 })
 
 // 发送文字信息
-const sentText = (text: string) => {
-  console.log(text)
+const orderDetail = ref<ConsultOrderItem>()
+const getOrderDetail = async () => {
+  console.log(route.query.orderId)
+  const res = await getConsultOrderDetail(route.query.orderId as string)
+  orderDetail.value = res.data
+}
+const onSendText = (text: string) => {
+  socket.emit('sendChatMsg', {
+    from: userStore.user?.id,
+    to: orderDetail.value?.docInfo?.id,
+    msgType: MsgType.MsgText,
+    msg: {
+      content: text
+    }
+  })
 }
 // 发送图片信息
-
+const onSendImg = (img: Image) => {
+  socket.emit('sendChatMsg', {
+    from: userStore.user?.id,
+    to: orderDetail.value?.docInfo?.id,
+    msgType: MsgType.MsgImage,
+    msg: {
+      picture: img
+    }
+  })
+}
 // 下拉刷新
 const loading = ref(false)
+
+onMounted(() => {
+  initSocket()
+  getOrderDetail()
+})
 </script>
 
 <template>
   <div class="room-page">
     <nav-bar title="问诊室"></nav-bar>
     <!-- 状态栏 -->
-    <room-status></room-status>
+    <room-status :status="orderDetail?.status" :countdown="orderDetail?.countdown"></room-status>
     <van-pull-refresh v-model="loading">
       <!-- 消息 -->
       <room-message v-for="item in messageList" :key="item.id" :listItem="item"></room-message>
     </van-pull-refresh>
     <!-- 操作栏 -->
-    <room-action @sent-text="sentText"></room-action>
+    <room-action
+      @send-text="onSendText"
+      :disabled="orderDetail?.status !== OrderType.ConsultChat"
+      @send-img="onSendImg"
+    ></room-action>
   </div>
 </template>
 

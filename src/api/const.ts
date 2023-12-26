@@ -1,9 +1,9 @@
 const timeOptions = [
   {
     label: '一天内',
-    value: 0
+    value: 1
   },
-  { label: '一月内', value: 1 },
+  { label: '一月内', value: 2 },
   {
     label: '半年内',
     value: 3

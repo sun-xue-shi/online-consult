@@ -1,19 +1,36 @@
 <script setup lang="ts">
-// import type { Image } from '@/types/consult'
-// import { showLoadingToast } from 'vant'
-// import type { UploaderAfterRead } from 'vant/lib/uploader/types'
+import { showLoadingToast } from 'vant'
+import type { UploaderAfterRead } from 'vant/lib/uploader/types'
 import { ref } from 'vue'
+import { uploadImage } from '@/api/consult'
+import type { Image } from '@/types/home'
 
-// 提交图片
-
-// 发送消息
+// 发送消息 文字 + 图片
 const text = ref('')
 const emit = defineEmits<{
-  (e: 'sent-text', data: string): void
+  (e: 'send-text', text: string): void
+  (e: 'send-img', img: Image): void
 }>()
-const sentText = () => {
-  emit('sent-text', text.value)
+
+const sendText = () => {
+  emit('send-text', text.value)
+  text.value = ''
 }
+
+const sendImage: UploaderAfterRead = async (data) => {
+  if (Array.isArray(data)) return
+  if (!data.file) return
+  const t = showLoadingToast('正在上传...')
+  const res = await uploadImage(data.file!)
+  console.log(res.data)
+
+  t.close()
+  emit('send-img', res.data)
+}
+
+defineProps<{
+  disabled: boolean
+}>()
 </script>
 
 <template>
@@ -25,9 +42,10 @@ const sentText = () => {
       :border="false"
       placeholder="问医生"
       autocomplete="off"
-      @keyup.enter="sentText"
+      @keyup.enter="sendText"
+      :disabled="disabled"
     ></van-field>
-    <van-uploader :preview-image="false">
+    <van-uploader :preview-image="false" :disabled="disabled" :after-read="sendImage">
       <UseIcon name="consult-img" />
     </van-uploader>
   </div>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ConsultType, IllnessTime, MsgType, PrescriptionStatus } from '@/enums'
 import { useUserStore } from '@/stores'
-// import dayjs from 'dayjs'
+import dayjs from 'dayjs'
 // import { showImagePreview, showToast } from 'vant'
 import EvaluateCard from './EvaluateCard.vue'
 import { useRouter } from 'vue-router'
@@ -14,7 +14,7 @@ defineProps<{
   listItem: Message
 }>()
 // 预览图片
-const store = useUserStore()
+const userStore = useUserStore()
 
 // 查看处方
 
@@ -29,10 +29,17 @@ const formatFlag = (value: 0 | 1) => {
   return consultOptions.find((item) => item.value === value)?.label
 }
 
+// 图片预览
 const previewImg = (pictures: Image[]) => {
   if (pictures && pictures.length) {
     showImagePreview(pictures.map((item) => item.url))
   }
+}
+
+const formatTime = (time: string) => dayjs(time).format('HH:MM')
+// 等图片渲染完成后再移动
+const loadSuccess = () => {
+  window.scrollTo(0, document.body.scrollHeight)
 }
 </script>
 
@@ -79,39 +86,51 @@ const previewImg = (pictures: Image[]) => {
     </div>
   </div>
   <!-- 发送文字 -->
-  <div class="msg msg-to" v-if="listItem.msgType === MsgType.MsgText">
+  <div
+    class="msg msg-to"
+    v-if="listItem.msgType === MsgType.MsgText && listItem.from === userStore.user.id"
+  >
     <div class="content">
-      <div class="time"></div>
-      <div class="pao"></div>
+      <div class="time">{{ formatTime(listItem.createTime) }}</div>
+      <div class="pao">{{ listItem.msg.content }}</div>
     </div>
-    <van-image />
+    <van-image :src="userStore.user.avatar" />
   </div>
   <!-- 发送图片 -->
-  <div class="msg msg-to" v-if="listItem.msgType === MsgType.MsgImage">
+  <div
+    class="msg msg-to"
+    v-if="listItem.msgType === MsgType.MsgImage && listItem.from === userStore.user.id"
+  >
     <div class="content">
-      <div class="time"></div>
-      <van-image fit="contain" />
+      <div class="time">{{ formatTime(listItem.createTime) }}</div>
+      <van-image fit="contain" :src="listItem.msg.picture.url" @load="loadSuccess()" />
     </div>
-    <van-image />
+    <van-image :src="userStore.user.avatar" />
   </div>
   <!-- 接收文字 -->
-  <div class="msg msg-from">
-    <van-image />
+  <div
+    class="msg msg-from"
+    v-if="listItem.msgType === MsgType.MsgText && listItem.from !== userStore.user.id"
+  >
+    <van-image :src="listItem.fromAvatar" />
     <div class="content">
-      <div class="time"></div>
-      <div class="pao"></div>
+      <div class="time">{{ formatTime(listItem.createTime) }}</div>
+      <div class="pao">{{ listItem.msg.content }}</div>
     </div>
   </div>
   <!-- 接收图片 -->
-  <div class="msg msg-from">
-    <van-image />
+  <div
+    class="msg msg-from"
+    v-if="listItem.msgType === MsgType.MsgImage && listItem.from !== userStore.user.id"
+  >
+    <van-image :src="listItem.fromAvatar" />
     <div class="content">
-      <div class="time"></div>
-      <van-image fit="contain" />
+      <div class="time">{{ formatTime(listItem.createTime) }}</div>
+      <van-image fit="contain" :src="listItem.msg.picture.url" @load="loadSuccess()" />
     </div>
   </div>
   <!-- 处方卡片 -->
-  <div class="msg msg-recipe">
+  <div class="msg msg-recipe" v-if="listItem.msgType === MsgType.CardPre">
     <div class="content">
       <div class="head van-hairline--bottom">
         <div class="head-tit">
@@ -136,7 +155,7 @@ const previewImg = (pictures: Image[]) => {
     </div>
   </div>
   <!-- 评价卡片，后期实现 -->
-  <div class="msg msg-comment">
+  <div class="msg msg-comment" v-if="false">
     <evaluate-card></evaluate-card>
   </div>
 </template>
