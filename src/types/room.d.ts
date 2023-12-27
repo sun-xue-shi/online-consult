@@ -21,6 +21,7 @@ export type Medical = {
   prescriptionFlag: 0 | 1
 }
 
+// 处方类型
 export type Prescription = {
   /** 处方ID */
   id: string

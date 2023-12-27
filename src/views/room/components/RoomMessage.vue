@@ -9,6 +9,7 @@ import type { Message } from '@/types/room'
 import { timeOptions, consultOptions } from '@/api/const'
 import type { Image } from '@/types/home'
 import { showImagePreview } from 'vant'
+import { getPrescriptionPic } from '@/api/consult'
 
 defineProps<{
   listItem: Message
@@ -40,6 +41,17 @@ const formatTime = (time: string) => dayjs(time).format('HH:MM')
 // 等图片渲染完成后再移动
 const loadSuccess = () => {
   window.scrollTo(0, document.body.scrollHeight)
+}
+
+// 查看处方
+const getPre = async (id?: string) => {
+  try {
+    if (!id) return
+    const res = await getPrescriptionPic(id)
+    showImagePreview([res.data.url])
+  } catch (error) {
+    console.log(error)
+  }
 }
 </script>
 
@@ -135,18 +147,25 @@ const loadSuccess = () => {
       <div class="head van-hairline--bottom">
         <div class="head-tit">
           <h3>电子处方</h3>
-          <p>原始处方 <van-icon name="arrow"></van-icon></p>
+          <p @click="getPre(listItem.msg.prescription?.id)">
+            原始处方 <van-icon name="arrow"></van-icon>
+          </p>
         </div>
-        <p></p>
-        <p>开方时间：</p>
+        <p>
+          {{ listItem.msg.prescription?.name }}
+          {{ listItem.msg.prescription?.age }}
+          {{ listItem.msg.prescription?.genderValue }}
+          {{ listItem.msg.prescription?.diagnosis }}
+        </p>
+        <p>开方时间：{{ listItem.msg.prescription?.createTime }}</p>
       </div>
       <div class="body">
-        <div class="body-item" v-for="med in 5" :key="med">
+        <div class="body-item" v-for="med in listItem.msg.prescription?.medicines" :key="med.id">
           <div class="durg">
-            <p></p>
-            <p></p>
+            <p>{{ med.name }} {{ med.specs }}</p>
+            <p>{{ med.usageDosag }}</p>
           </div>
-          <div class="num">x</div>
+          <div class="num">x{{ med.quantity }}</div>
         </div>
       </div>
       <div class="foot">
