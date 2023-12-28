@@ -5,10 +5,10 @@ import dayjs from 'dayjs'
 // import { showImagePreview, showToast } from 'vant'
 import EvaluateCard from './EvaluateCard.vue'
 import { useRouter } from 'vue-router'
-import type { Message } from '@/types/room'
+import type { Message, Prescription } from '@/types/room'
 import { timeOptions, consultOptions } from '@/api/const'
 import type { Image } from '@/types/home'
-import { showImagePreview } from 'vant'
+import { showFailToast, showImagePreview } from 'vant'
 import { getPrescriptionPic } from '@/api/consult'
 
 defineProps<{
@@ -16,11 +16,6 @@ defineProps<{
 }>()
 // 预览图片
 const userStore = useUserStore()
-
-// 查看处方
-
-// 跳转支付
-const router = useRouter()
 
 const formatIllness = (value: IllnessTime) => {
   return timeOptions.find((item) => item.value === value)?.label
@@ -51,6 +46,15 @@ const getPre = async (id?: string) => {
     showImagePreview([res.data.url])
   } catch (error) {
     console.log(error)
+  }
+}
+
+// 购买药品
+const router = useRouter()
+const buyPrescription = (pre?: Prescription) => {
+  if (pre) {
+    if (pre.status === PrescriptionStatus.Invalid) return showFailToast('处方失效')
+    if (pre.status === PrescriptionStatus.Payment) router.push(`/medicine/pay?id=${pre.id}`)
   }
 }
 </script>
@@ -169,7 +173,7 @@ const getPre = async (id?: string) => {
         </div>
       </div>
       <div class="foot">
-        <span>购买药品</span>
+        <span @click="buyPrescription(listItem.msg.prescription)">购买药品</span>
       </div>
     </div>
   </div>
