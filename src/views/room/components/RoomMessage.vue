@@ -178,8 +178,11 @@ const buyPrescription = (pre?: Prescription) => {
     </div>
   </div>
   <!-- 评价卡片，后期实现 -->
-  <div class="msg msg-comment" v-if="false">
-    <evaluate-card></evaluate-card>
+  <div
+    class="msg msg-comment"
+    v-if="listItem.msgType === MsgType.CardEvaForm || listItem.msgType === MsgType.CardEva"
+  >
+    <evaluate-card :evaluate="listItem.msg.evaluateDoc"></evaluate-card>
   </div>
 </template>
 

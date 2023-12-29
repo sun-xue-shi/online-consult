@@ -18,8 +18,6 @@ import { getConsultOrderDetail } from '@/api/consult'
 import type { ConsultOrderItem } from '@/types/consult'
 import type { Image } from '@/types/home'
 
-// 提供问诊订单数据给后代组件
-
 // 建立连接
 const messageList = ref<Message[]>([])
 const userStore = useUserStore()
@@ -112,6 +110,17 @@ const onSendImg = (img: Image) => {
     }
   })
 }
+
+// 提供问诊订单数据给后代组件
+provide('consult', orderDetail.value)
+const completeEva = (score: number) => {
+  const item = messageList.value.find((item) => item.msgType === MsgType.CardEvaForm)
+  if (item) {
+    item.msg.evaluateDoc = { score }
+    item.msgType = MsgType.CardEva
+  }
+}
+provide('completeEva', completeEva)
 // 下拉刷新
 const loading = ref(false)
 

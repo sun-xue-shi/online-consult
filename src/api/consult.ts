@@ -43,6 +43,7 @@ export const getConsultOrderDetail = (orderId: string) => {
 export const getPrescriptionPic = (id?: string) =>
   request<{ url: string }>(`patient/consult/prescription/${id}`)
 
+// 提交评价信息
 export const evaluateConsultOrder = (data: {
   docId: string
   orderId: string
