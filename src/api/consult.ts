@@ -52,9 +52,12 @@ export const evaluateConsultOrder = (data: {
   anonymousFlag: 0 | 1
 }) => request.post('patient/order/evaluate', data)
 
+// 获取问诊订单信息
 export const getConsultOrderList = (params: ConsultOrderListParams) =>
-  request.get<ConsultOrderPage>('patient/consult/order/list', params)
+  request.get<ConsultOrderPage>('/patient/consult/order/list', params)
 
+// 取消订单
 export const cancelOrder = (id: string) => request.put(`patient/order/cancel/${id}`)
 
+// 删除订单
 export const deleteOrder = (id: string) => request.delete(`patient/order/${id}`)

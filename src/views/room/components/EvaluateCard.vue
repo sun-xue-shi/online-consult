@@ -13,12 +13,14 @@ const completeEva = inject<(score: number) => void>('consultEva')
 
 // 收集数据
 defineProps<{
-  evaluate?: EvaluateDoc
+  evaluate: EvaluateDoc
 }>()
 
 const score = ref()
 const content = ref('')
 const anonymousFlag = ref(false)
+const hasEva = ref(false)
+const disabled = computed(() => !score.value || !content.value)
 const onSubmit = async () => {
   if (!score.value) return showFailToast('请填写评分')
   if (!content.value) return showFailToast('请填写评价')
@@ -32,14 +34,15 @@ const onSubmit = async () => {
       anonymousFlag: anonymousFlag.value ? 1 : 0
     })
     completeEva && completeEva(score.value)
+    hasEva.value = true
     return showFailToast('评价成功')
   }
 }
 </script>
 
 <template>
-  <div class="evaluate-card" v-if="evaluate">
-    <p class="title">医生服务评价</p>
+  <div class="evaluate-card" v-if="hasEva">
+    <p class="title">感谢您的评价</p>
     <p class="desc">我们会更加努力提升服务质量</p>
     <van-rate
       :model-value="evaluate.score"
@@ -50,8 +53,8 @@ const onSubmit = async () => {
       void-color="rgba(0,0,0,0.04)"
     />
   </div>
-  <div class="evaluate-card">
-    <p class="title">感谢您的评价</p>
+  <div class="evaluate-card" v-else>
+    <p class="title">医生服务评价</p>
     <p class="desc">本次在线问诊服务您还满意吗？</p>
     <van-rate
       size="7vw"
@@ -71,7 +74,9 @@ const onSubmit = async () => {
     ></van-field>
     <div class="footer">
       <van-checkbox v-model="anonymousFlag">匿名评价</van-checkbox>
-      <van-button type="primary" size="small" round @click="onSubmit"> 提交评价 </van-button>
+      <van-button type="primary" size="small" round @click="onSubmit" :disabled="disabled">
+        提交评价
+      </van-button>
     </div>
   </div>
 </template>

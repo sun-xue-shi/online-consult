@@ -182,7 +182,7 @@ const buyPrescription = (pre?: Prescription) => {
     class="msg msg-comment"
     v-if="listItem.msgType === MsgType.CardEvaForm || listItem.msgType === MsgType.CardEva"
   >
-    <evaluate-card :evaluate="listItem.msg.evaluateDoc"></evaluate-card>
+    <evaluate-card :evaluate="listItem.msg.evaluateDoc!"></evaluate-card>
   </div>
 </template>
 

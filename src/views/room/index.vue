@@ -112,7 +112,7 @@ const onSendImg = (img: Image) => {
 }
 
 // 提供问诊订单数据给后代组件
-provide('consult', orderDetail.value)
+provide('consult', orderDetail)
 const completeEva = (score: number) => {
   const item = messageList.value.find((item) => item.msgType === MsgType.CardEvaForm)
   if (item) {

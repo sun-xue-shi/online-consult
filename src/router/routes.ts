@@ -48,13 +48,7 @@ const routes = [
       title: '家庭档案'
     }
   },
-  {
-    path: '/user/consult',
-    component: () => import('@/views/user/ConsultPage.vue'),
-    meta: {
-      title: '我的问诊'
-    }
-  },
+
   {
     path: '/consult/fast',
     component: () => import('@/views/consult/ConsultFast.vue'),
@@ -86,8 +80,13 @@ const routes = [
   {
     path: '/room',
     component: () => import('@/views/room/index.vue'),
+    meta: { title: '问诊室' }
+  },
+  {
+    path: '/user/consult',
+    component: () => import('@/views/user/ConsultOrder.vue'),
     meta: {
-      title: '问诊室'
+      title: '问诊记录'
     }
   }
 ]
