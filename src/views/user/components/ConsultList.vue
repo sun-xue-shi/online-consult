@@ -8,21 +8,21 @@ import { getConsultOrderList } from '@/api/consult'
 const props = defineProps<{
   type: ConsultType
 }>()
-const params = ref<ConsultOrderListParams>({
+const params = {
   type: props.type,
   current: 1,
   pageSize: 5
-})
+}
 
 // 加载更多
 const loading = ref(false)
 const finished = ref(false)
 const list = ref<ConsultOrderItem[]>([])
 const onLoad = async () => {
-  const res = await getConsultOrderList(params.value)
+  const res = await getConsultOrderList(params)
   list.value.push(...res.data.rows)
-  if (params.value.current < res.data.pageTotal) {
-    params.value.current++
+  if (params.current < res.data.pageTotal) {
+    params.current++
   } else {
     finished.value = true
   }

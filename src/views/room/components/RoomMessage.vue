@@ -52,9 +52,14 @@ const getPre = async (id?: string) => {
 // 购买药品
 const router = useRouter()
 const buyPrescription = (pre?: Prescription) => {
+  console.log(pre)
+
   if (pre) {
+    console.log(pre.status)
+
     if (pre.status === PrescriptionStatus.Invalid) return showFailToast('处方失效')
-    if (pre.status === PrescriptionStatus.Payment) router.push(`/medicine/pay?id=${pre.id}`)
+
+    router.push(`medicine/pay`)
   }
 }
 </script>

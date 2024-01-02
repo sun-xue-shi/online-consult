@@ -88,6 +88,13 @@ const routes = [
     meta: {
       title: '问诊记录'
     }
+  },
+  {
+    path: '/medicine/pay',
+    component: () => import('@/views/medicine/OrderPay.vue'),
+    meta: {
+      title: '药品支付'
+    }
   }
 ]
 
