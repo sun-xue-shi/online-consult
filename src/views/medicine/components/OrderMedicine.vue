@@ -9,8 +9,8 @@ import type { Medical } from '@/types/room'
 <template>
   <div class="order-medical">
     <div class="head">
-      <h3>优医药房</h3>
-      <small>优医质保 假一赔十</small>
+      <h3>药房开药</h3>
+      <small>质保 假一赔十</small>
     </div>
     <div class="item van-hairline--top" v-for="med in 1" :key="med">
       <img class="img" alt="" />
