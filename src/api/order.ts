@@ -2,8 +2,12 @@ import type { AddressItem, Logistics, OrderDetail, OrderPre } from '@/types/orde
 import { request } from '@/utils/request'
 
 //药品预支付订单
-export const getMedicalOrderPre = (params: { prescriptionId: string }) =>
-  request.get<OrderPre>('patient/medicine/order/pre', { params })
+export const getMedicalOrderPre = (prescriptionId: string) =>
+  request.get<OrderPre>('patient/medicine/order/pre', {
+    params: {
+      prescriptionId
+    }
+  })
 
 // 默认地址
 export const getAddresList = () => request.get<AddressItem[]>('patient/order/address')

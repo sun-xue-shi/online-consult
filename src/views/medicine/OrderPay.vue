@@ -6,31 +6,29 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import OrderMedical from '@/views/medicine/components/OrderMedicine.vue'
 
-const route = useRoute()
 // 预支付信息
+const route = useRoute()
 const orderPre = ref<OrderPre>()
-const loadOrderPre = async () => {
-  const res = await getMedicalOrderPre({
-    prescriptionId: route.query.id as string
-  })
+const getOrderPre = async () => {
+  const res = await getMedicalOrderPre(route.query.id as string)
   orderPre.value = res.data
 }
 
 // 收货地址信息
-// const address = ref<AddressItem>()
-// const loadAddress = async () => {
-//   const addRes = await getAddresList()
-//   // 如果有默认的收货地址就是它，如果没有就去第一个收货地址即可
-//   if (addRes.data.length) {
-//     const defAddress = addRes.data.find((item) => item.isDefault === 1)
-//     if (defAddress) address.value = defAddress
-//     else address.value = addRes.data[0]
-//   }
-// }
+const address = ref<AddressItem>()
+const getAddress = async () => {
+  const addRes = await getAddresList()
+  // 如果有默认的收货地址就是它，如果没有就去第一个收货地址即可
+  if (addRes.data.length) {
+    const defAddress = addRes.data.find((item) => item.isDefault === 1)
+    if (defAddress) address.value = defAddress
+    else address.value = addRes.data[0]
+  }
+}
 
 onMounted(() => {
-  //   loadAddress()
-  //   loadOrderPre()
+  getAddress()
+  getOrderPre()
 })
 
 // 创建订单
@@ -67,26 +65,29 @@ const show = ref(false)
 </script>
 
 <template>
-  <div class="order-pay-page">
-    <cp-nav-bar title="药品支付" />
+  <div class="order-pay-page" v-if="orderPre && address">
+    <nav-bar title="药品支付" />
     <div class="order-address">
       <p class="area">
         <van-icon name="location" />
-        <span>湖北省</span>
+        <span>{{ address.province + address.city + address.county }}</span>
       </p>
-      <p class="detail">不要用</p>
+      <p class="detail">{{ address.addressDetail }}</p>
 
-      <p>堵得慌 55555</p>
+      <p>
+        {{ address.receiver }}
+        {{ address.mobile.replace(/^(\d{3})(?:\d{4})(\d{4})$/, '\$1****\$2') }}
+      </p>
     </div>
 
     <!-- 药品清单组件 -->
-    <order-medical></order-medical>
+    <order-medical :medicines="orderPre.medicines"></order-medical>
     <div class="order-detail">
       <van-cell-group>
-        <van-cell title="药品金额" :value="`￥9`" />
-        <van-cell title="运费" :value="`￥8`" />
-        <van-cell title="优惠券" :value="`-￥5`" />
-        <van-cell title="实付款" :value="`￥232`" class="price" />
+        <van-cell title="药品金额" :value="`￥${orderPre.payment}`" />
+        <van-cell title="运费" :value="`￥${orderPre.expressFee}`" />
+        <van-cell title="优惠券" :value="`-￥${orderPre.couponDeduction}`" />
+        <van-cell title="实付款" :value="`￥${orderPre.actualPayment}`" class="price" />
       </van-cell-group>
     </div>
     <div class="order-tip">
@@ -109,9 +110,9 @@ const show = ref(false)
       pay-callback="/order/pay/result"
     ></cp-pay-sheet>
   </div>
-  <div class="order-pay-page">
-    <cp-nav-bar title="药品支付" />
-    <van-skeleton title avatar row="2" style="margin-top: 15px"></van-skeleton>
+  <div class="order-pay-page" v-else>
+    <nav-bar title="药品支付" />
+    <van-skeleton title avatar row="2" style="margin-top: 15px" loading></van-skeleton>
     <van-skeleton title row="4" style="margin-top: 50px"></van-skeleton>
     <van-skeleton title row="4" style="margin-top: 50px"></van-skeleton>
   </div>

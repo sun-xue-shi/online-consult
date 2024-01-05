@@ -59,7 +59,7 @@ const buyPrescription = (pre?: Prescription) => {
 
     if (pre.status === PrescriptionStatus.Invalid) return showFailToast('处方失效')
 
-    router.push(`medicine/pay`)
+    router.push(`/medicine/pay?id=${pre.id}`)
   }
 }
 </script>

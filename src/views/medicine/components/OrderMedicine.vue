@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { Medical } from '@/types/room'
 
-// defineProps<{
-//   medicines: Medical[]
-// }>()
+defineProps<{
+  medicines: Medical[]
+}>()
 </script>
 
 <template>
@@ -12,20 +12,20 @@ import type { Medical } from '@/types/room'
       <h3>药房开药</h3>
       <small>质保 假一赔十</small>
     </div>
-    <div class="item van-hairline--top" v-for="med in 1" :key="med">
-      <img class="img" alt="" />
+    <div class="item van-hairline--top" v-for="med in medicines" :key="med.id">
+      <img class="img" alt="" :src="med.avatar" />
       <div class="info">
         <p class="name">
-          <span>青霉素</span>
-          <span>x5</span>
+          <span>{{ med.name }}</span>
+          <span>x{{ med.quantity }}</span>
         </p>
         <p class="size">
-          <van-tag>处方药</van-tag>
-          <span>描述</span>
+          <van-tag>{{ med.prescriptionFlag }}</van-tag>
+          <span>{{ med.specs }}</span>
         </p>
-        <p class="price">￥5</p>
+        <p class="price">￥{{ med.amount }}</p>
       </div>
-      <div class="desc"></div>
+      <div class="desc">{{ med.usageDosag }}</div>
     </div>
   </div>
 </template>
