@@ -1,8 +1,10 @@
 import { followOrUnfollow } from '@/api/home'
+import { getMedicalOrderDetail } from '@/api/order'
 import { sendCode } from '@/api/user'
 import type { Doctor, FollowType } from '@/types/home'
+import type { OrderDetail } from '@/types/order'
 import { showToast, type FormInstance } from 'vant'
-import { onUnmounted, ref, type Ref } from 'vue'
+import { onMounted, onUnmounted, ref, type Ref } from 'vue'
 
 export const useMobileCode = (mobile: Ref<string>, type: string) => {
   const form = ref<FormInstance>()
@@ -58,4 +60,19 @@ export const useFollow = (type: FollowType = 'doc') => {
     follow,
     isLoading
   }
+}
+
+export const useOrderDetail = (id: string) => {
+  const order = ref<OrderDetail>()
+  const loading = ref(false)
+  onMounted(async () => {
+    try {
+      loading.value = true
+      const res = await getMedicalOrderDetail(id)
+      order.value = res.data
+    } finally {
+      loading.value = false
+    }
+  })
+  return { loading, order }
 }
