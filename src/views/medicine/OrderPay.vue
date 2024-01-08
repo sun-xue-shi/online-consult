@@ -36,32 +36,36 @@ const agree = ref(false)
 const loading = ref(false)
 const orderId = ref('')
 const show = ref(false)
-// const onSubmit = async () => {
-//   if (!agree.value) return showToast('请勾选用户协议')
-//   if (!address.value?.id) return showToast('请选择收货地址')
-//   if (!orderPre.value?.id) return showToast('未找到处方')
+const onSubmit = async () => {
+  if (!agree.value) return showToast('请勾选用户协议')
+  if (!address.value?.id) return showToast('请选择收货地址')
+  if (!orderPre.value?.id) return showToast('未找到处方')
 
-//   if (!orderId.value) {
-//     try {
-//       loading.value = true
-//       const res = await createMedicalOrder({
-//         id: orderPre.value.id,
-//         addressId: address.value.id,
-//         couponId: orderPre.value.couponId
-//       })
-//       orderId.value = res.data.id
-//       loading.value = false
+  if (!orderId.value) {
+    try {
+      loading.value = true
+      const res = await createMedicalOrder({
+        id: orderPre.value.id,
+        addressId: address.value.id,
+        couponId: orderPre.value.couponId
+      })
+      orderId.value = res.data.id
+      loading.value = false
 
-//       // 打开抽屉
-//       show.value = true
-//     } catch (error) {
-//       loading.value = false
-//     }
-//   } else {
-//     // 打开抽屉
-//     show.value = true
-//   }
-// }
+      // 打开抽屉
+      show.value = true
+    } catch (error) {
+      loading.value = false
+    }
+  } else {
+    // 打开抽屉
+    show.value = true
+  }
+}
+
+const onClose = () => {
+  show.value = false
+}
 </script>
 
 <template>
@@ -102,13 +106,16 @@ const show = ref(false)
       button-type="primary"
       text-align="left"
       :loading="loading"
+      @click="onSubmit"
     ></van-submit-bar>
     <!-- 支付抽屉 -->
-    <cp-pay-sheet
+    <pay-sheet
       v-model:show="show"
       :order-id="orderId"
-      pay-callback="/order/pay/result"
-    ></cp-pay-sheet>
+      :pay-callback="`http://localhost:5173/order/pay/result`"
+      :actual-payment="orderPre.actualPayment"
+      :on-before-close="onClose"
+    ></pay-sheet>
   </div>
   <div class="order-pay-page" v-else>
     <nav-bar title="药品支付" />

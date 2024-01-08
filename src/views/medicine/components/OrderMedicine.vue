@@ -20,7 +20,7 @@ defineProps<{
           <span>x{{ med.quantity }}</span>
         </p>
         <p class="size">
-          <van-tag>{{ med.prescriptionFlag }}</van-tag>
+          <van-tag>处方药</van-tag>
           <span>{{ med.specs }}</span>
         </p>
         <p class="price">￥{{ med.amount }}</p>

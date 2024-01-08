@@ -95,6 +95,27 @@ const routes = [
     meta: {
       title: '药品支付'
     }
+  },
+  {
+    path: '/order/pay/result',
+    component: () => import('@/views/medicine/OrderRes.vue'),
+    meta: {
+      title: '支付结果'
+    }
+  },
+  {
+    path: '/order/:id',
+    component: () => import('@/views/medicine/OrderDetail.vue'),
+    meta: {
+      title: '药品订单'
+    }
+  },
+  {
+    path: '/order/logistics/:id',
+    component: () => import('@/views/medicine/OrderLogistics.vue'),
+    meta: {
+      title: '物流详情'
+    }
   }
 ]
 
