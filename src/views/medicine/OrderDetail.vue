@@ -3,8 +3,10 @@ import { useOrderDetail } from '@/hooks'
 import { OrderType } from '@/enums'
 import { useRoute } from 'vue-router'
 import OrderMedical from '@/views/medicine/components/OrderMedicine.vue'
+import { useRouter } from 'vue-router';
 
 const route = useRoute()
+const router = useRouter()
 const { order } = useOrderDetail(route.params.id as string)
 </script>
 
@@ -39,7 +41,7 @@ const { order } = useOrderDetail(route.params.id as string)
       <div
         class="card"
         v-else
-        @click="$router.push(`/order/logistics/${order?.id}`)"
+        @click="router.push(`/order/logistics/${order?.id}`)"
       >
         <div class="logistics">
           <p>{{ order.expressInfo.content }}</p>

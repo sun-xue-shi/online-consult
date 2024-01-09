@@ -21,5 +21,6 @@ export const createMedicalOrder = (data: { id: string; addressId: string; coupon
 export const getMedicalOrderDetail = (id: string) =>
   request.get<OrderDetail>(`patient/medicine/order/detail/${id}`)
 
+// 获取物流信息
 export const getMedicalOrderLogistics = (id: string) =>
   request.get<Logistics>(`patient/order/${id}/logistics`)
